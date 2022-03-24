@@ -14,10 +14,10 @@ const login = async (req, res) => {
 	}
 
 	// Normally id provided by DB
-	// JWT_SECRET: Always use long, complex and unguessable string value in production!
 	const id = new Date().getDate();
 
 	// try to keep payload small, better experience for user
+	// JWT_SECRET: Always use long, complex and unguessable string value in production!
 	const token = jwt.sign({ id, username }, process.env.JWT_SECRET, {
 		expiresIn: '30d',
 	});
@@ -28,6 +28,13 @@ const login = async (req, res) => {
 };
 
 const dashboard = async (req, res) => {
+	const authHeader = req.headers.authorization;
+	if (!authHeader || !authHeader.startsWith('Bearer ')) {
+		throw new CustomAPIError('No token provided', 401);
+	}
+
+	const token = authHeader.split(' ')[1];
+	console.log(token);
 	const randomNumber = Math.floor(Math.random() * 100);
 	res.status(200).json({
 		msg: 'Hello',
